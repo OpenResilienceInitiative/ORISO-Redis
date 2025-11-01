@@ -1,0 +1,180 @@
+# Prometheus Alert Rules for ORISO Redis
+# Import these rules into your Prometheus/AlertManager configuration
+
+groups:
+  - name: redis_alerts
+    interval: 30s
+    rules:
+      # Redis Down Alert
+      - alert: RedisDown
+        expr: redis_up == 0
+        for: 1m
+        labels:
+          severity: critical
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis is down"
+          description: "Redis instance is not responding. All cache operations will fail."
+
+      # High Memory Usage Alert
+      - alert: RedisHighMemoryUsage
+        expr: (redis_used_memory_bytes / redis_maxmemory_bytes) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis memory usage is high"
+          description: "Redis is using {{ $value | humanizePercentage }} of available memory."
+
+      # Memory Usage Critical
+      - alert: RedisMemoryCritical
+        expr: (redis_used_memory_bytes / redis_maxmemory_bytes) > 0.95
+        for: 2m
+        labels:
+          severity: critical
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis memory usage is critical"
+          description: "Redis is using {{ $value | humanizePercentage }} of available memory. Evictions may occur."
+
+      # Too Many Connected Clients
+      - alert: RedisTooManyConnections
+        expr: redis_connected_clients > 100
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis has too many connections"
+          description: "Redis has {{ $value }} connected clients. This may indicate a connection leak."
+
+      # High Number of Rejected Connections
+      - alert: RedisRejectedConnections
+        expr: increase(redis_rejected_connections_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis is rejecting connections"
+          description: "Redis has rejected {{ $value }} connections in the last 5 minutes."
+
+      # Low Cache Hit Rate
+      - alert: RedisLowHitRate
+        expr: |
+          (
+            rate(redis_keyspace_hits_total[5m])
+            /
+            (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m]))
+          ) < 0.5
+        for: 10m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis cache hit rate is low"
+          description: "Cache hit rate is {{ $value | humanizePercentage }}. Consider reviewing cache strategy."
+
+      # Keys Eviction
+      - alert: RedisKeysEvicted
+        expr: increase(redis_evicted_keys_total[5m]) > 100
+        for: 2m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis is evicting keys"
+          description: "{{ $value }} keys have been evicted in the last 5 minutes due to memory pressure."
+
+      # Replication Lag (if using replication)
+      - alert: RedisReplicationLag
+        expr: redis_connected_slaves > 0 and redis_repl_backlog_first_byte_offset - redis_repl_offset > 1000000
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis replication lag detected"
+          description: "Replication lag is {{ $value }} bytes."
+
+      # Last Save Failed
+      - alert: RedisLastSaveFailed
+        expr: redis_rdb_last_save_status == 0
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis last save (BGSAVE) failed"
+          description: "The last Redis background save operation failed. Data persistence may be at risk."
+
+      # Slow Queries
+      - alert: RedisSlowQueries
+        expr: redis_slowlog_length > 10
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis has slow queries"
+          description: "There are {{ $value }} slow queries in Redis slow log."
+
+      # No Recent Saves (for persistence check)
+      - alert: RedisNoRecentSave
+        expr: (time() - redis_rdb_last_save_timestamp_seconds) > 3600
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis hasn't saved data recently"
+          description: "Redis hasn't performed a background save in {{ $value | humanizeDuration }}."
+
+      # Blocked Clients
+      - alert: RedisBlockedClients
+        expr: redis_blocked_clients > 0
+        for: 10m
+        labels:
+          severity: info
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis has blocked clients"
+          description: "{{ $value }} clients are currently blocked waiting for operations."
+
+      # High Command Latency
+      - alert: RedisHighLatency
+        expr: redis_command_duration_seconds_sum / redis_command_duration_seconds_count > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          component: redis
+          service: oriso
+        annotations:
+          summary: "Redis command latency is high"
+          description: "Average command latency is {{ $value | humanizeDuration }}."
+
+      # Exporter Down
+      - alert: RedisExporterDown
+        expr: up{job="redis-exporter"} == 0
+        for: 2m
+        labels:
+          severity: warning
+          component: redis-exporter
+          service: oriso
+        annotations:
+          summary: "Redis Exporter is down"
+          description: "Redis Exporter is not responding. Metrics collection is unavailable."
+

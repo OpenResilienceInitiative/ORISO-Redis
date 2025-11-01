@@ -1,0 +1,147 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app":"redis"},"name":"redis","namespace":"caritas"},"spec":{"ports":[{"name":"redis","port":6379,"protocol":"TCP","targetPort":6379}],"selector":{"app":"redis"},"type":"ClusterIP"}}
+    creationTimestamp: "2025-10-22T18:15:09Z"
+    labels:
+      app: redis
+    name: redis
+    namespace: caritas
+    resourceVersion: "371405"
+    uid: ba79aa7e-8812-40c2-a179-aa8e7b6f1a49
+  spec:
+    clusterIP: 10.43.113.3
+    clusterIPs:
+    - 10.43.113.3
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: redis
+      port: 6379
+      protocol: TCP
+      targetPort: 6379
+    selector:
+      app: redis
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app":"redis-commander"},"name":"redis-commander","namespace":"caritas"},"spec":{"ports":[{"name":"web","port":9021,"protocol":"TCP","targetPort":8081}],"selector":{"app":"redis-commander"},"type":"LoadBalancer"}}
+    creationTimestamp: "2025-10-22T19:03:27Z"
+    finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+    labels:
+      app: redis-commander
+    name: redis-commander
+    namespace: caritas
+    resourceVersion: "373765"
+    uid: 52039ac2-2ff6-464b-821d-14abe5135542
+  spec:
+    allocateLoadBalancerNodePorts: true
+    clusterIP: 10.43.155.175
+    clusterIPs:
+    - 10.43.155.175
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: web
+      nodePort: 30208
+      port: 9021
+      protocol: TCP
+      targetPort: 8081
+    selector:
+      app: redis-commander
+    sessionAffinity: None
+    type: LoadBalancer
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 91.99.219.182
+        ipMode: VIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"name":"redis-exporter","namespace":"caritas"},"spec":{"ports":[{"name":"metrics","port":9121,"targetPort":9121}],"selector":{"app":"redis-exporter"}}}
+    creationTimestamp: "2025-10-22T18:25:11Z"
+    name: redis-exporter
+    namespace: caritas
+    resourceVersion: "371888"
+    uid: 866dce0e-4545-4b78-a900-e01342c55fc9
+  spec:
+    clusterIP: 10.43.230.52
+    clusterIPs:
+    - 10.43.230.52
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: metrics
+      port: 9121
+      protocol: TCP
+      targetPort: 9121
+    selector:
+      app: redis-exporter
+    sessionAffinity: None
+    type: ClusterIP
+  status:
+    loadBalancer: {}
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      kubectl.kubernetes.io/last-applied-configuration: |
+        {"apiVersion":"v1","kind":"Service","metadata":{"annotations":{},"labels":{"app":"redis-exporter"},"name":"redis-exporter-metrics","namespace":"caritas"},"spec":{"ports":[{"name":"metrics","port":9020,"protocol":"TCP","targetPort":9121}],"selector":{"app":"redis-exporter"},"type":"LoadBalancer"}}
+    creationTimestamp: "2025-10-22T19:03:27Z"
+    finalizers:
+    - service.kubernetes.io/load-balancer-cleanup
+    labels:
+      app: redis-exporter
+    name: redis-exporter-metrics
+    namespace: caritas
+    resourceVersion: "373785"
+    uid: a07dee78-9347-4292-980f-4d43d970a5cc
+  spec:
+    allocateLoadBalancerNodePorts: true
+    clusterIP: 10.43.159.120
+    clusterIPs:
+    - 10.43.159.120
+    externalTrafficPolicy: Cluster
+    internalTrafficPolicy: Cluster
+    ipFamilies:
+    - IPv4
+    ipFamilyPolicy: SingleStack
+    ports:
+    - name: metrics
+      nodePort: 30117
+      port: 9020
+      protocol: TCP
+      targetPort: 9121
+    selector:
+      app: redis-exporter
+    sessionAffinity: None
+    type: LoadBalancer
+  status:
+    loadBalancer:
+      ingress:
+      - ip: 91.99.219.182
+        ipMode: VIP
+kind: List
+metadata:
+  resourceVersion: ""

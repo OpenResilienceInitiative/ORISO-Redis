@@ -1,0 +1,15 @@
+FROM rediscommander/redis-commander:latest
+
+# Expose Redis Commander port
+EXPOSE 8081
+
+# Health check
+HEALTHCHECK --interval=15s --timeout=3s --start-period=15s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:8081/ || exit 1
+
+# Use the default entrypoint from base image
+# Environment variables are set via Kubernetes deployment:
+# - REDIS_HOSTS: Connection string for Redis
+# - HTTP_USER: Web UI username
+# - HTTP_PASSWORD: Web UI password
+

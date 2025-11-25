@@ -1,9 +1,7 @@
 FROM redis:7-alpine
 
-# Copy custom Redis configuration if provided
-# Note: In Kubernetes, this is typically provided via ConfigMap
-# This Dockerfile allows for custom builds with baked-in configs if needed
-COPY redis.conf /etc/redis/redis.conf 2>/dev/null || true
+# Note: In Kubernetes, redis.conf is provided via ConfigMap
+# This Dockerfile builds the base image without baked-in configs
 
 # Expose Redis port
 EXPOSE 6379
@@ -15,4 +13,5 @@ HEALTHCHECK --interval=10s --timeout=3s --start-period=30s --retries=3 \
 # Use the default entrypoint from base image
 # The redis.conf will be mounted via ConfigMap in Kubernetes
 # Command: redis-server /etc/redis/redis.conf
+
 

@@ -1,0 +1,117 @@
+{
+  "dashboard": {
+    "title": "ORISO Redis Monitoring",
+    "tags": ["redis", "oriso", "cache"],
+    "timezone": "browser",
+    "panels": [
+      {
+        "title": "Redis Status",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "redis_up",
+            "legendFormat": "Redis Status"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 0}
+      },
+      {
+        "title": "Connected Clients",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "redis_connected_clients",
+            "legendFormat": "Connected Clients"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 4}
+      },
+      {
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "redis_used_memory_bytes",
+            "legendFormat": "Used Memory"
+          },
+          {
+            "expr": "redis_maxmemory_bytes",
+            "legendFormat": "Max Memory"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 4}
+      },
+      {
+        "title": "Commands Per Second",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(redis_commands_processed_total[5m])",
+            "legendFormat": "Commands/sec"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 12}
+      },
+      {
+        "title": "Cache Hit Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(redis_keyspace_hits_total[5m]) / (rate(redis_keyspace_hits_total[5m]) + rate(redis_keyspace_misses_total[5m])) * 100",
+            "legendFormat": "Hit Rate %"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 12}
+      },
+      {
+        "title": "Total Keys",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(redis_db_keys)",
+            "legendFormat": "Total Keys"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 0, "y": 20}
+      },
+      {
+        "title": "Evicted Keys",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "redis_evicted_keys_total",
+            "legendFormat": "Evicted Keys"
+          }
+        ],
+        "gridPos": {"h": 4, "w": 6, "x": 6, "y": 20}
+      },
+      {
+        "title": "Network I/O",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(redis_net_input_bytes_total[5m])",
+            "legendFormat": "Input (bytes/sec)"
+          },
+          {
+            "expr": "rate(redis_net_output_bytes_total[5m])",
+            "legendFormat": "Output (bytes/sec)"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 0, "y": 24}
+      },
+      {
+        "title": "Command Latency",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "redis_command_duration_seconds_total",
+            "legendFormat": "{{cmd}}"
+          }
+        ],
+        "gridPos": {"h": 8, "w": 12, "x": 12, "y": 24}
+      }
+    ]
+  }
+}
+
